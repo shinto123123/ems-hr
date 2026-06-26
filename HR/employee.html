@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR Dashboard - Employees</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+
+body{background:#0b1437;display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+/* ── NAVBAR ── */
+.navbar{height:62px;background:#111c44;border-bottom:1px solid #1b2e6e;display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;z-index:100;}
+.navbar-left{display:flex;align-items:center;gap:14px;}
+.hamburger{font-size:18px;color:#8898aa;cursor:pointer;}
+.navbar-logo{width:38px;height:38px;background:#1b2e6e;border:2px solid #4299e1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#4299e1;letter-spacing:-.5px;}
+.navbar-title{font-size:15px;font-weight:700;color:#fff;letter-spacing:.4px;}
+.navbar-center{flex:1;display:flex;justify-content:center;padding:0 40px;}
+.nav-search{width:100%;max-width:440px;background:#0b1437;border:1px solid #1b2e6e;border-radius:10px;padding:9px 15px;display:flex;align-items:center;gap:10px;}
+.nav-search i{color:#4a5568;font-size:13px;}
+.nav-search input{border:none;outline:none;background:none;width:100%;color:#e2e8f0;font-size:13px;}
+.nav-search input::placeholder{color:#4a5568;}
+.navbar-right{display:flex;align-items:center;gap:16px;}
+.nav-icon-btn{position:relative;width:36px;height:36px;background:#0b1437;border:1px solid #1b2e6e;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#8898aa;font-size:15px;transition:.2s;}
+.nav-icon-btn:hover{border-color:#4299e1;color:#4299e1;}
+.nav-icon-btn .badge{position:absolute;top:-4px;right:-4px;background:#4299e1;color:#fff;font-size:9px;font-weight:700;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.nav-profile{display:flex;align-items:center;gap:10px;cursor:pointer;padding:6px 12px;border-radius:10px;border:1px solid #1b2e6e;transition:.2s;}
+.nav-profile:hover{border-color:#4299e1;}
+.nav-profile-avatar{width:32px;height:32px;border-radius:50%;background:#1b2e6e;display:flex;align-items:center;justify-content:center;color:#8898aa;font-size:14px;}
+.nav-profile-info h4{font-size:13px;font-weight:600;color:#fff;}
+.nav-profile-info small{font-size:11px;color:#8898aa;}
+
+/* ── BODY WRAP ── */
+.body-wrap{display:flex;flex:1;overflow:hidden;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:220px;height:100%;background:#111c44;border-right:1px solid #1b2e6e;overflow-y:auto;flex-shrink:0;}
+.sidebar ul{list-style:none;padding:8px 0;}
+.sidebar ul li a{display:flex;align-items:center;gap:12px;padding:11px 20px;color:#8898aa;font-size:13.5px;text-decoration:none;transition:.2s;border-left:3px solid transparent;}
+.sidebar ul li a:hover,.sidebar ul li.active a{background:rgba(66,153,225,.1);color:#fff;border-left-color:#4299e1;}
+.sidebar ul li a i{width:16px;font-size:14px;}
+
+/* ── MAIN SPLIT CONTAINER ── */
+.main-workspace{flex:1;display:flex;overflow:hidden;}
+
+/* ── EMPLOYEES DIRECTORY PANEL (LEFT) ── */
+.directory-panel{flex:1.4;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid #1b2e6e;}
+.page-header{padding:16px 22px 0;}
+.page-header h2{font-size:20px;font-weight:700;color:#fff;}
+.directory-content{flex:1;padding:14px 22px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;}
+.directory-content::-webkit-scrollbar{width:6px;}
+.directory-content::-webkit-scrollbar-thumb{background:#1b2e6e;border-radius:20px;}
+
+/* Mini KPI Micro-cards */
+.mini-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.mini-kpi{background:#111c44;border:1px solid #1b2e6e;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;}
+.mini-icon{width:36px;height:36px;border-radius:8px;background:#0b1437;border:1px solid #1b2e6e;display:flex;align-items:center;justify-content:center;font-size:15px;color:#4299e1;}
+.mini-info p{font-size:11px;color:#8898aa;}
+.mini-info h3{font-size:16px;font-weight:700;color:#fff;}
+.mini-info small{font-size:10px;color:#4ade80;}
+
+/* Filters Bar */
+.filter-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:between;background:#111c44;padding:12px;border-radius:12px;border:1px solid #1b2e6e;}
+.search-box{flex:1;min-width:180px;background:#0b1437;border:1px solid #1b2e6e;border-radius:8px;padding:7px 12px;display:flex;align-items:center;gap:8px;}
+.search-box input{border:none;outline:none;background:none;color:#fff;font-size:12.5px;width:100%;}
+.search-box i{color:#4a5568;font-size:12px;}
+.filter-select{background:#0b1437;border:1px solid #1b2e6e;color:#cbd5e1;font-size:12.5px;padding:7px 12px;border-radius:8px;outline:none;cursor:pointer;}
+.btn-action{background:#1b2e6e;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-size:12.5px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.2s;}
+.btn-action:hover{background:#2a449c;}
+.btn-primary{background:#4299e1;}
+.btn-primary:hover{background:#2b7fd1;}
+
+/* Table Styling */
+.table-wrap{background:#111c44;border:1px solid #1b2e6e;border-radius:12px;overflow:hidden;}
+.emp-table{width:100%;border-collapse:collapse;text-align:left;}
+.emp-table th{background:#162256;color:#8898aa;font-size:12px;font-weight:600;padding:12px 16px;border-bottom:1px solid #1b2e6e;text-transform:uppercase;letter-spacing:0.5px;}
+.emp-table td{padding:12px 16px;color:#cbd5e1;font-size:13px;border-bottom:1px solid #1b2e6e;vertical-align:middle;}
+.emp-table tr:last-child td{border-bottom:none;}
+.emp-table tr:hover td{background:rgba(66,153,225,0.03);cursor:pointer;}
+.emp-table tr.selected td{background:rgba(66,153,225,0.08);border-color:rgba(66,153,225,0.3);}
+.status-badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;}
+.status-badge.active{background:rgba(74,222,128,0.1);color:#4ade80;}
+.status-badge.leave{background:rgba(251,191,36,0.1);color:#fbbf24;}
+.btn-icon{background:none;border:none;color:#8898aa;cursor:pointer;padding:4px;font-size:14px;transition:.2s;}
+.btn-icon:hover{color:#fff;}
+
+/* Pagination */
+.table-footer{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#111c44;border-top:1px solid #1b2e6e;font-size:12px;color:#8898aa;}
+.pagination{display:flex;gap:4px;}
+.page-link{padding:5px 10px;background:#0b1437;border:1px solid #1b2e6e;color:#cbd5e1;border-radius:6px;text-decoration:none;font-size:11.5px;}
+.page-link.active{background:#4299e1;color:#fff;border-color:#4299e1;}
+.page-link:hover:not(.active){border-color:#4299e1;color:#fff;}
+
+/* ── DETAILS PANEL (RIGHT) ── */
+.details-panel{flex:1;background:#111c44;display:flex;flex-direction:column;overflow:hidden;box-shadow:-4px 0 24px rgba(0,0,0,0.25);}
+.details-header{padding:18px 22px;border-bottom:1px solid #1b2e6e;display:flex;justify-content:between;align-items:center;}
+.details-header h3{color:#fff;font-size:16px;font-weight:600;}
+.close-panel-btn{background:none;border:none;color:#8898aa;font-size:16px;cursor:pointer;}
+.close-panel-btn:hover{color:#fff;}
+
+.details-content{flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:20px;}
+.details-content::-webkit-scrollbar{width:6px;}
+.details-content::-webkit-scrollbar-thumb{background:#1b2e6e;border-radius:20px;}
+
+/* Profile Overview block */
+.profile-hero{display:flex;align-items:center;gap:16px;padding-bottom:14px;border-bottom:1px solid #1b2e6e;}
+.hero-avatar{width:64px;height:64px;border-radius:50%;background:#0b1437;border:2px solid #1b2e6e;display:flex;align-items:center;justify-content:center;font-size:24px;color:#8898aa;}
+.hero-meta h2{font-size:18px;color:#fff;font-weight:600;display:flex;align-items:center;gap:8px;}
+.hero-meta p{font-size:13px;color:#8898aa;margin-top:2px;}
+.hero-meta span{font-size:12px;color:#cbd5e1;display:block;margin-top:4px;}
+
+/* Tabs styling */
+.tab-nav{display:flex;gap:16px;border-bottom:1px solid #1b2e6e;}
+.tab-link{padding:8px 0;color:#8898aa;font-size:13px;text-decoration:none;border-bottom:2px solid transparent;transition:.2s;}
+.tab-link.active{color:#4299e1;border-color:#4299e1;font-weight:600;}
+.tab-link:hover{color:#fff;}
+
+/* Profile Fields blocks */
+.info-section{background:#0b1437;border:1px solid #1b2e6e;border-radius:12px;padding:16px;}
+.section-title-wrap{display:flex;justify-content:between;align-items:center;margin-bottom:14px;}
+.section-title-wrap h4{color:#fff;font-size:14px;font-weight:600;}
+.btn-edit-text{background:none;border:none;color:#4299e1;font-size:12.5px;cursor:pointer;font-weight:600;}
+.btn-edit-text:hover{text-decoration:underline;}
+
+.info-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:12px 16px;}
+.info-label{font-size:12.5px;color:#8898aa;}
+.info-value{font-size:12.5px;color:#e2e8f0;}
+
+/* Bottom Footer controls */
+.details-footer{padding:14px 22px;background:#0b1437;border-top:1px solid #1b2e6e;display:flex;justify-content:flex-end;gap:10px;}
+.btn-split{background:#4299e1;color:#fff;border:none;padding:9px 16px;border-radius:8px 0 0 8px;font-size:13px;font-weight:600;cursor:pointer;}
+.btn-split-arrow{background:#2b7fd1;color:#fff;border:none;padding:9px 12px;border-radius:0 8px 8px 0;font-size:13px;cursor:pointer;border-left:1px solid rgba(255,255,255,0.1);}
+
+/* ── ADD EMPLOYEE MODAL OVERLAY ── */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(5,9,28,0.75);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;}
+.modal-box{background:#111c44;border:1px solid #1b2e6e;border-radius:14px;width:100%;max-width:520px;box-shadow:0 10px 30px rgba(0,0,0,0.5);display:flex;flex-direction:column;overflow:hidden;}
+.modal-header{padding:16px 20px;border-bottom:1px solid #1b2e6e;display:flex;justify-content:between;align-items:center;}
+.modal-header h3{color:#fff;font-size:15px;font-weight:600;}
+.modal-body{padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-group.full-width{grid-column: span 2;}
+.form-group label{font-size:12px;color:#cbd5e1;font-weight:500;}
+.form-group label span{color:#f56565;margin-left:2px;}
+.form-group input, .form-group select{background:#0b1437;border:1px solid #1b2e6e;border-radius:8px;padding:8px 12px;color:#fff;font-size:13px;outline:none;width:100%;}
+.form-group input:focus, .form-group select:focus{border-color:#4299e1;}
+.form-group input::placeholder{color:#4a5568;}
+.modal-footer{padding:14px 20px;border-top:1px solid #1b2e6e;background:#0b1437;display:flex;justify-content:flex-end;gap:10px;}
+
+.d-none{display:none !important;}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navbar-left">
+    <div class="hamburger"><i class="fa-solid fa-bars"></i></div>
+    <div class="navbar-logo">HR</div>
+    <span class="navbar-title">EMPLOYEE MANAGEMENT SYSTEM</span>
+  </div>
+  <div class="navbar-center">
+    <div class="nav-search">
+      <i class="fa-solid fa-search"></i>
+      <input type="text" placeholder="Search employees, documents, departments...">
+    </div>
+  </div>
+  <div class="navbar-right">
+    <div class="nav-icon-btn"><i class="fa-regular fa-bell"></i><span class="badge">5</span></div>
+    <div class="nav-icon-btn"><i class="fa-solid fa-gear"></i></div>
+    <div class="nav-profile">
+      <div class="nav-profile-avatar"><i class="fa-regular fa-user"></i></div>
+      <div class="nav-profile-info"><h4>John Doe</h4><small>Administrator</small></div>
+    </div>
+  </div>
+</div>
+
+<div class="body-wrap">
+
+  <div class="sidebar">
+    <ul>
+      <li><a href="index.html"><i class="fa-solid fa-house"></i>Dashboard</a></li>
+      <li class="active"><a href="Employee.html"><i class="fa-solid fa-users"></i>Employees</a></li>
+      <li><a href="department.html"><i class="fa-solid fa-building"></i>Departments</a></li>
+      <li><a href="attendance.html"><i class="fa-solid fa-calendar-check"></i>Attendance</a></li>
+      <li><a href="leave management.html"><i class="fa-solid fa-plane-departure"></i>Leave Management</a></li>
+      <li><a href="#"><i class="fa-solid fa-user-plus"></i>Recruitment</a></li>
+      <li><a href="perfomance.html"><i class="fa-solid fa-chart-line"></i>Performance</a></li>
+      <li><a href="payroll.html"><i class="fa-solid fa-money-bill"></i>Payroll</a></li>
+      <li><a href="internship.html"><i class="fa-solid fa-user-graduate"></i>Internship Management</a></li>
+      <li><a href="mentorship.html"><i class="fa-solid fa-user-group"></i>Mentorship</a></li>
+      <li><a href="document.html"><i class="fa-solid fa-file"></i>Documents</a></li>
+      <li><a href="reports.html"><i class="fa-solid fa-chart-column"></i>Reports & Analytics</a></li>
+      <li><a href="notification.html"><i class="fa-solid fa-bell"></i>Notifications</a></li>
+      <li><a href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
+    </ul>
+  </div>
+
+  <div class="main-workspace">
+
+    <div class="directory-panel">
+      <div class="page-header"><h2>Employees</h2></div>
+      
+      <div class="directory-content">
+        
+        <div class="mini-kpi-grid">
+          <div class="mini-kpi">
+            <div class="mini-icon"><i class="fa-solid fa-users"></i></div>
+            <div class="mini-info"><p>Total Employees</p><h3>250</h3><small>+12 this month</small></div>
+          </div>
+          <div class="mini-kpi">
+            <div class="mini-icon"><i class="fa-solid fa-user-check"></i></div>
+            <div class="mini-info"><p>Active Employees</p><h3>235</h3></div>
+          </div>
+          <div class="mini-kpi">
+            <div class="mini-icon"><i class="fa-solid fa-calendar-minus"></i></div>
+            <div class="mini-info"><p>On Leave</p><h3>10</h3></div>
+          </div>
+          <div class="mini-kpi">
+            <div class="mini-icon"><i class="fa-solid fa-user-xmark"></i></div>
+            <div class="mini-info"><p>Resigned</p><h3>5</h3></div>
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <div class="search-box">
+            <i class="fa-solid fa-search"></i>
+            <input type="text" placeholder="Search by name, email, department...">
+          </div>
+          <select class="filter-select">
+            <option>All Departments</option>
+            <option>Engineering</option>
+            <option>Marketing</option>
+            <option>Sales</option>
+          </select>
+          <select class="filter-select">
+            <option>All Status</option>
+            <option>Active</option>
+            <option>On Leave</option>
+          </select>
+          <button class="btn-action"><i class="fa-solid fa-filter"></i> Filter</button>
+          <button class="btn-action btn-primary" id="openModalBtn"><i class="fa-solid fa-plus"></i> Add Employee</button>
+        </div>
+
+        <div class="table-wrap">
+          <table class="emp-table">
+            <thead>
+              <tr>
+                <th>Employee ID</th>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Designation</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="selected">
+                <td>EMP001</td>
+                <td><strong>John Doe</strong></td>
+                <td>Engineering</td>
+                <td>Software Engineer</td>
+                <td>john.doe@example.com</td>
+                <td><span class="status-badge active">Active</span></td>
+                <td><button class="btn-icon"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
+              </tr>
+              <tr>
+                <td>EMP002</td>
+                <td><strong>Jane Smith</strong></td>
+                <td>Marketing</td>
+                <td>Marketing Manager</td>
+                <td>jane.smith@example.com</td>
+                <td><span class="status-badge active">Active</span></td>
+                <td><button class="btn-icon"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
+              </tr>
+              <tr>
+                <td>EMP003</td>
+                <td><strong>Michael Brown</strong></td>
+                <td>Sales</td>
+                <td>Sales Executive</td>
+                <td>michael.b@example.com</td>
+                <td><span class="status-badge active">Active</span></td>
+                <td><button class="btn-icon"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
+              </tr>
+              <tr>
+                <td>EMP004</td>
+                <td><strong>Emily Davis</strong></td>
+                <td>HR</td>
+                <td>HR Executive</td>
+                <td>emily.d@example.com</td>
+                <td><span class="status-badge active">Active</span></td>
+                <td><button class="btn-icon"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
+              </tr>
+              <tr>
+                <td>EMP005</td>
+                <td><strong>David Wilson</strong></td>
+                <td>Finance</td>
+                <td>Accountant</td>
+                <td>david.w@example.com</td>
+                <td><span class="status-badge active">Active</span></td>
+                <td><button class="btn-icon"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
+              </tr>
+              <tr>
+                <td>EMP006</td>
+                <td><strong>Sarah Johnson</strong></td>
+                <td>Engineering</td>
+                <td>UI/UX Designer</td>
+                <td>sarah.j@example.com</td>
+                <td><span class="status-badge active">Active</span></td>
+                <td><button class="btn-icon"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
+              </tr>
+              <tr>
+                <td>EMP007</td>
+                <td><strong>Daniel Lee</strong></td>
+                <td>Marketing</td>
+                <td>Content Strategist</td>
+                <td>daniel.l@example.com</td>
+                <td><span class="status-badge active">Active</span></td>
+                <td><button class="btn-icon"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
+              </tr>
+              <tr>
+                <td>EMP008</td>
+                <td><strong>Olivia Martinez</strong></td>
+                <td>Sales</td>
+                <td>Sales Associate</td>
+                <td>olivia.m@example.com</td>
+                <td><span class="status-badge leave">On Leave</span></td>
+                <td><button class="btn-icon"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <div class="table-footer">
+            <span>Showing 1 to 8 of 250 employees</span>
+            <div class="pagination">
+              <a href="#" class="page-link"><i class="fa-solid fa-chevron-left"></i></a>
+              <a href="#" class="page-link active">1</a>
+              <a href="#" class="page-link">2</a>
+              <a href="#" class="page-link">3</a>
+              <span style="padding: 4px 6px;">...</span>
+              <a href="#" class="page-link">32</a>
+              <a href="#" class="page-link"><i class="fa-solid fa-chevron-right"></i></a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="details-panel" id="detailsPanel">
+      <div class="details-header">
+        <h3>Employee Details</h3>
+        <button class="close-panel-btn" id="closePanelBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <div class="details-content">
+        <div class="profile-hero">
+          <div class="hero-avatar"><i class="fa-regular fa-user"></i></div>
+          <div class="hero-meta">
+            <h2>John Doe <span class="status-badge active" style="font-size:10px; font-weight:normal; display:inline-block; margin-left:6px;">Active</span></h2>
+            <p>Software Engineer • Engineering</p>
+            <span><i class="fa-regular fa-envelope" style="margin-right:4px;"></i> john.doe@example.com • <i class="fa-solid fa-phone" style="margin-right:4px;"></i> +91 98765 43210</span>
+          </div>
+        </div>
+
+        <div class="tab-nav">
+          <a href="#" class="tab-link active">Profile</a>
+          <a href="#" class="tab-link">Job Details</a>
+          <a href="#" class="tab-link">Documents</a>
+          <a href="#" class="tab-link">Attendance</a>
+          <a href="#" class="tab-link">Leave</a>
+          <a href="#" class="tab-link">Payroll</a>
+        </div>
+
+        <div class="info-section">
+          <div class="section-title-wrap">
+            <h4>Personal Information</h4>
+            <button class="btn-edit-text">Edit</button>
+          </div>
+          <div class="info-grid">
+            <span class="info-label">Employee ID</span><span class="info-value">EMP001</span>
+            <span class="info-label">Full Name</span><span class="info-value">John Doe</span>
+            <span class="info-label">Email</span><span class="info-value">john.doe@example.com</span>
+            <span class="info-label">Phone</span><span class="info-value">+91 98765 43210</span>
+            <span class="info-label">Date of Birth</span><span class="info-value">15 Aug 1990</span>
+            <span class="info-label">Gender</span><span class="info-value">Male</span>
+            <span class="info-label">Marital Status</span><span class="info-value">Married</span>
+            <span class="info-label">Address</span><span class="info-value">123, Green Street, Bangalore, Karnataka - 560001</span>
+          </div>
+        </div>
+
+        <div class="info-section">
+          <div class="section-title-wrap">
+            <h4>Job Information</h4>
+            <button class="btn-edit-text">Edit</button>
+          </div>
+          <div class="info-grid">
+            <span class="info-label">Department</span><span class="info-value">Engineering</span>
+            <span class="info-label">Designation</span><span class="info-value">Software Engineer</span>
+            <span class="info-label">Reporting To</span><span class="info-value">Sarah Johnson</span>
+            <span class="info-label">Date of Joining</span><span class="info-value">01 Jan 2023</span>
+            <span class="info-label">Employment Type</span><span class="info-value">Full Time</span>
+            <span class="info-label">Work Location</span><span class="info-value">Bangalore, India</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="details-footer">
+        <button class="btn-action" style="background:#1b2e6e; color:#cbd5e1;">Close</button>
+        <div style="display:flex;">
+          <button class="btn-split">Edit Employee</button>
+          <button class="btn-split-arrow"><i class="fa-solid fa-chevron-down"></i></button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal-overlay d-none" id="modalOverlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Add Employee</h3>
+      <button class="close-panel-btn" id="closeModalBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>First Name<span>*</span></label>
+        <input type="text" placeholder="Enter first name">
+      </div>
+      <div class="form-group">
+        <label>Last Name<span>*</span></label>
+        <input type="text" placeholder="Enter last name">
+      </div>
+      <div class="form-group">
+        <label>Email<span>*</span></label>
+        <input type="email" placeholder="Enter email address">
+      </div>
+      <div class="form-group">
+        <label>Phone<span>*</span></label>
+        <input type="text" placeholder="Enter phone number">
+      </div>
+      <div class="form-group">
+        <label>Department<span>*</span></label>
+        <select>
+          <option hidden>Select department</option>
+          <option>Engineering</option>
+          <option>Marketing</option>
+          <option>Sales</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Designation<span>*</span></label>
+        <select>
+          <option hidden>Select designation</option>
+          <option>Software Engineer</option>
+          <option>Marketing Manager</option>
+          <option>Sales Executive</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Date of Joining<span>*</span></label>
+        <input type="date">
+      </div>
+      <div class="form-group">
+        <label>Employment Type<span>*</span></label>
+        <select>
+          <option hidden>Select type</option>
+          <option>Full Time</option>
+          <option>Part Time</option>
+          <option>Contractor</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-action" style="background:transparent; color:#8898aa;" id="cancelModalBtn">Cancel</button>
+      <button class="btn-action btn-primary">Save Employee</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const openModalBtn = document.getElementById('openModalBtn');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+  const cancelModalBtn = document.getElementById('cancelModalBtn');
+  const modalOverlay = document.getElementById('modalOverlay');
+  const closePanelBtn = document.getElementById('closePanelBtn');
+  const detailsPanel = document.getElementById('detailsPanel');
+
+  // Modal Open/Close handlers
+  openModalBtn.addEventListener('click', () => modalOverlay.classList.remove('d-none'));
+  closeModalBtn.addEventListener('click', () => modalOverlay.classList.add('d-none'));
+  cancelModalBtn.addEventListener('click', () => modalOverlay.classList.add('d-none'));
+
+  // Toggle Profile Details Right Flyout
+  closePanelBtn.addEventListener('click', () => detailsPanel.classList.add('d-none'));
+</script>
+
+</body>
+</html>
