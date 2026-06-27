@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HR Dashboard - Attendance</title>
+<title>HR Dashboard - Attendance Calendar</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
@@ -41,112 +41,85 @@ body{background:#0b1437;display:flex;flex-direction:column;height:100vh;overflow
 .sidebar ul li a:hover,.sidebar ul li.active a{background:rgba(66,153,225,.1);color:#fff;border-left-color:#4299e1;}
 .sidebar ul li a i{width:16px;font-size:14px;}
 
-/* ── MAIN SPLIT WINDOW AREA ── */
-.main-workspace{flex:1;display:flex;overflow:hidden;}
+/* ── MAIN WORKSPACE AREA ── */
+.main-workspace{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 
-/* ── DIRECTORY PANEL (LEFT) ── */
-.directory-panel{flex:1.4;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid #1b2e6e;}
-.page-header{padding:16px 22px 0;}
+.page-header{padding:16px 24px 8px;}
 .page-header h2{font-size:20px;font-weight:700;color:#fff;}
 .breadcrumb{font-size:11px;color:#8898aa;margin-top:2px;display:flex;gap:4px;}
 .breadcrumb span{color:#4299e1;}
 
-.directory-content{flex:1;padding:14px 22px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;}
-.directory-content::-webkit-scrollbar{width:6px;}
-.directory-content::-webkit-scrollbar-thumb{background:#1b2e6e;border-radius:20px;}
+/* Split-pane content container */
+.content-grid{flex:1;display:flex;padding:14px 24px 24px;gap:20px;overflow:hidden;}
 
-/* 5 Column Attendance Metric Ribbon Grid */
-.mini-kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
-.mini-kpi{background:#111c44;border:1px solid #1b2e6e;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;}
-.mini-icon{width:36px;height:36px;border-radius:8px;background:#0b1437;border:1px solid #1b2e6e;display:flex;align-items:center;justify-content:center;font-size:14px;color:#4299e1;flex-shrink:0;}
-.mini-info p{font-size:11px;color:#8898aa;margin-bottom:2px;}
-.mini-info h3{font-size:16px;font-weight:700;color:#fff;}
-.mini-info small{font-size:10px;color:#8898aa;}
+/* ── EMPLOYEE LIST PANEL (LEFT) ── */
+.employee-panel{width:320px;background:#111c44;border:1px solid #1b2e6e;border-radius:14px;display:flex;flex-direction:column;overflow:hidden;}
+.panel-search-box{padding:16px;border-bottom:1px solid #1b2e6e;}
+.side-search{background:#0b1437;border:1px solid #1b2e6e;border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:8px;}
+.side-search input{border:none;outline:none;background:none;color:#fff;font-size:13px;width:100%;}
+.side-search i{color:#4a5568;}
 
-/* Filters Bar Panel */
-.filter-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:#111c44;padding:12px;border-radius:12px;border:1px solid #1b2e6e;}
-.search-box{flex:1;min-width:160px;background:#0b1437;border:1px solid #1b2e6e;border-radius:8px;padding:7px 12px;display:flex;align-items:center;gap:8px;}
-.search-box input{border:none;outline:none;background:none;color:#fff;font-size:12.5px;width:100%;}
-.search-box i{color:#4a5568;font-size:12px;}
-.filter-select{background:#0b1437;border:1px solid #1b2e6e;color:#cbd5e1;font-size:12.5px;padding:7px 12px;border-radius:8px;outline:none;cursor:pointer;}
-.date-picker-btn{background:#0b1437;border:1px solid #1b2e6e;color:#cbd5e1;font-size:12.5px;padding:7px 12px;border-radius:8px;display:flex;align-items:center;gap:8px;cursor:pointer;}
-.btn-action{background:#1b2e6e;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-size:12.5px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.2s;}
-.btn-action:hover{background:#2a449c;}
+.employee-list{flex:1;overflow-y:auto;list-style:none;}
+.employee-list::-webkit-scrollbar{width:5px;}
+.employee-list::-webkit-scrollbar-thumb{background:#1b2e6e;border-radius:10px;}
 
-/* Table Structure */
-.table-wrap{background:#111c44;border:1px solid #1b2e6e;border-radius:12px;overflow:hidden;}
-.attendance-table{width:100%;border-collapse:collapse;text-align:left;}
-.attendance-table th{background:#162256;color:#8898aa;font-size:11px;font-weight:600;padding:12px 16px;border-bottom:1px solid #1b2e6e;text-transform:uppercase;letter-spacing:0.5px;}
-.attendance-table td{padding:10px 16px;color:#cbd5e1;font-size:13px;border-bottom:1px solid #1b2e6e;vertical-align:middle;}
-.attendance-table tr:last-child td{border-bottom:none;}
-.attendance-table tr:hover td{background:rgba(66,153,225,0.03);cursor:pointer;}
-.attendance-table tr.selected td{background:rgba(66,153,225,0.08);border-color:rgba(66,153,225,0.3);}
+.employee-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #1b2e6e;cursor:pointer;transition:.2s;}
+.employee-item:hover{background:rgba(66,153,225,0.04);}
+.employee-item.active{background:rgba(66,153,225,0.12);border-left:4px solid #4299e1;}
+.emp-avatar{width:36px;height:36px;border-radius:50%;background:#0b1437;border:1px solid #1b2e6e;display:flex;align-items:center;justify-content:center;color:#8898aa;font-size:13px;}
+.emp-info h4{font-size:13.5px;color:#fff;font-weight:600;margin-bottom:2px;}
+.emp-info p{font-size:11px;color:#8898aa;}
 
-/* Inline User Avatar styling */
-.user-cell{display:flex;align-items:center;gap:10px;font-weight:500;color:#fff;}
-.user-avatar-mini{width:28px;height:28px;border-radius:50%;background:#0b1437;border:1px solid #1b2e6e;display:flex;align-items:center;justify-content:center;color:#8898aa;font-size:11px;}
+/* ── CALENDAR DASHBOARD WORKSPACE (RIGHT) ── */
+.calendar-panel{flex:1;background:#111c44;border:1px solid #1b2e6e;border-radius:14px;display:flex;flex-direction:column;overflow:hidden;}
 
-/* Attendance Status Flag Blocks */
-.status-badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;text-align:center;min-width:64px;}
-.status-badge.present{background:rgba(74,222,128,0.1);color:#4ade80;}
-.status-badge.late{background:rgba(251,191,36,0.1);color:#fbbf24;}
-.status-badge.leave{background:rgba(96,165,250,0.1);color:#60a5fa;}
-.status-badge.absent{background:rgba(248,113,113,0.1);color:#f87171;}
+/* Calendar Header controls */
+.calendar-header{padding:16px 20px;border-bottom:1px solid #1b2e6e;display:flex;align-items:center;justify-content:space-between;}
+.active-user-display{display:flex;align-items:center;gap:12px;}
+.active-user-display h3{font-size:16px;color:#fff;font-weight:600;}
+.active-user-display span{font-size:12px;color:#8898aa;background:#0b1437;padding:2px 8px;border-radius:4px;border:1px solid #1b2e6e;}
 
-.btn-icon{background:none;border:none;color:#8898aa;cursor:pointer;padding:4px;font-size:14px;}
-.btn-icon:hover{color:#fff;}
+.calendar-controls{display:flex;align-items:center;gap:12px;}
+.month-nav-btn{background:#0b1437;border:1px solid #1b2e6e;color:#fff;width:32px;height:32px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.month-nav-btn:hover{border-color:#4299e1;color:#4299e1;}
+.current-month-label{color:#fff;font-size:15px;font-weight:600;min-width:110px;text-align:center;}
 
-/* Pagination panel footer */
-.table-footer{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#111c44;border-top:1px solid #1b2e6e;font-size:12px;color:#8898aa;}
-.pagination{display:flex;gap:4px;}
-.page-link{padding:5px 10px;background:#0b1437;border:1px solid #1b2e6e;color:#cbd5e1;border-radius:6px;text-decoration:none;font-size:11.5px;}
-.page-link.active{background:#4299e1;color:#fff;border-color:#4299e1;}
+/* Legend Row */
+.legend-bar{background:#162256;padding:10px 20px;border-bottom:1px solid #1b2e6e;display:flex;gap:20px;flex-wrap:wrap;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#cbd5e1;}
+.legend-dot{width:10px;height:10px;border-radius:50%;}
 
-/* ── DETAILS PANEL (RIGHT) ── */
-.details-panel{flex:1;background:#111c44;display:flex;flex-direction:column;overflow:hidden;box-shadow:-4px 0 24px rgba(0,0,0,0.25);}
-.details-header{padding:18px 22px;border-bottom:1px solid #1b2e6e;display:flex;justify-content:between;align-items:center;}
-.details-header h3{color:#fff;font-size:16px;font-weight:600;}
-.close-panel-btn{background:none;border:none;color:#8898aa;font-size:16px;cursor:pointer;}
-.close-panel-btn:hover{color:#fff;}
+/* Main Grid Engine */
+.calendar-view{flex:1;display:flex;flex-direction:column;padding:16px;overflow-y:auto;}
+.weekday-header{display:grid;grid-template-columns:repeat(7, 1fr);text-align:center;margin-bottom:8px;}
+.weekday-header span{color:#8898aa;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;padding:6px 0;}
 
-.details-content{flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:18px;}
-.details-content::-webkit-scrollbar{width:6px;}
-.details-content::-webkit-scrollbar-thumb{background:#1b2e6e;border-radius:20px;}
+.days-grid{display:grid;grid-template-columns:repeat(7, 1fr);grid-auto-rows: minmax(76px, 1fr);gap:8px;flex:1;}
+.calendar-day{background:#0b1437;border:1px solid #1b2e6e;border-radius:8px;padding:8px;display:flex;flex-direction:column;justify-content:space-between;position:relative;}
+.calendar-day.empty{background:transparent;border:none;}
 
-/* Profile block header info */
-.profile-hero{display:flex;align-items:center;gap:14px;padding-bottom:14px;border-bottom:1px solid #1b2e6e;}
-.hero-avatar{width:52px;height:52px;border-radius:50%;background:#0b1437;border:1px solid #1b2e6e;display:flex;align-items:center;justify-content:center;font-size:20px;color:#8898aa;}
-.hero-meta h2{font-size:16px;color:#fff;font-weight:600;display:flex;align-items:center;gap:6px;}
-.hero-meta p{font-size:12.5px;color:#8898aa;margin-top:2px;}
-.hero-meta span{font-size:11px;color:#cbd5e1;display:block;margin-top:2px;}
+.day-num{font-size:12px;font-weight:600;color:#8898aa;}
+.calendar-day.today .day-num{color:#4299e1;background:rgba(66,153,225,0.15);width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
 
-/* Sub navigation tabs block layout */
-.tab-nav{display:flex;gap:16px;border-bottom:1px solid #1b2e6e;}
-.tab-link{padding:8px 0;color:#8898aa;font-size:13px;text-decoration:none;border-bottom:2px solid transparent;}
-.tab-link.active{color:#4299e1;border-color:#4299e1;font-weight:600;}
-.tab-link:hover{color:#fff;}
+/* Status Blocks for Calendar Cells */
+.day-status{font-size:10px;font-weight:700;padding:3px 6px;border-radius:4px;text-align:center;margin-top:4px;}
+.day-time{font-size:10px;color:#8898aa;margin-top:auto;text-align:right;}
 
-/* Container info data segment blocks */
-.info-section{background:#0b1437;border:1px solid #1b2e6e;border-radius:12px;padding:16px;}
-.section-title{color:#fff;font-size:13px;font-weight:600;margin-bottom:12px;}
+/* Status Variant Styles matches system badges */
+.status-present{border-left:3px solid #4ade80;}
+.status-present .day-status{background:rgba(74,222,128,0.1);color:#4ade80;}
+.status-late{border-left:3px solid #fbbf24;}
+.status-late .day-status{background:rgba(251,191,36,0.1);color:#fbbf24;}
+.status-leave{border-left:3px solid #60a5fa;}
+.status-leave .day-status{background:rgba(96,165,250,0.1);color:#60a5fa;}
+.status-absent{border-left:3px solid #f87171;}
+.status-absent .day-status{background:rgba(248,113,113,0.1);color:#f87171;}
 
-.info-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:10px 16px;}
-.info-label{font-size:12.5px;color:#8898aa;}
-.info-value{font-size:12.5px;color:#e2e8f0;}
-
-/* Listing metric rows parameters */
-.metrics-list{display:flex;flex-direction:column;gap:10px;}
-.metric-row{display:flex;align-items:center;justify-content:between;padding-bottom:8px;border-bottom:1px solid #1b2e6e;}
-.metric-row:last-child{border-bottom:none;padding-bottom:0;}
-.metric-label{font-size:12.5px;color:#cbd5e1;}
-.metric-val{font-size:12.5px;color:#fff;font-weight:600;}
-
-/* Action drawer panel base console footer */
-.details-footer{padding:14px 22px;background:#0b1437;border-top:1px solid #1b2e6e;display:flex;justify-content:center;}
-.btn-full-width{width:100%;background:none;border:1px solid #1b2e6e;color:#cbd5e1;padding:9px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;text-align:center;transition:.2s;}
-.btn-full-width:hover{border-color:#4299e1;color:#fff;}
-
-.d-none{display:none !important;}
+/* Dot references */
+.dot-present{background:#4ade80;}
+.dot-late{background:#fbbf24;}
+.dot-leave{background:#60a5fa;}
+.dot-absent{background:#f87171;}
 </style>
 </head>
 <body>
@@ -195,294 +168,183 @@ body{background:#0b1437;display:flex;flex-direction:column;height:100vh;overflow
   </div>
 
   <div class="main-workspace">
-
-    <div class="directory-panel">
-      <div class="page-header">
-        <h2>Attendance</h2>
-        <div class="breadcrumb">Dashboard &gt; <span>Attendance</span></div>
-      </div>
+    <div class="page-header">
+      <h2>Attendance Tracker</h2>
+      <div class="breadcrumb">Dashboard &gt; <span>Attendance Calendar</span></div>
+    </div>
+    
+    <div class="content-grid">
       
-      <div class="directory-content">
-        
-        <div class="mini-kpi-grid">
-          <div class="mini-kpi">
-            <div class="mini-icon"><i class="fa-solid fa-users"></i></div>
-            <div class="mini-info"><p>Total Employees</p><h3>250</h3><small>Across organization</small></div>
-          </div>
-          <div class="mini-kpi">
-            <div class="mini-icon"><i class="fa-regular fa-calendar-check"></i></div>
-            <div class="mini-info"><p>Present Today</p><h3>230</h3><small style="color:#4ade80;">92%</small></div>
-          </div>
-          <div class="mini-kpi">
-            <div class="mini-icon"><i class="fa-solid fa-user-minus"></i></div>
-            <div class="mini-info"><p>Absent Today</p><h3>15</h3><small style="color:#f87171;">6%</small></div>
-          </div>
-          <div class="mini-kpi">
-            <div class="mini-icon"><i class="fa-regular fa-clock"></i></div>
-            <div class="mini-info"><p>On Leave Today</p><h3>5</h3><small style="color:#60a5fa;">2%</small></div>
-          </div>
-          <div class="mini-kpi">
-            <div class="mini-icon"><i class="fa-solid fa-business-time"></i></div>
-            <div class="mini-info"><p>Late Today</p><h3>10</h3><small style="color:#fbbf24;">4%</small></div>
-          </div>
-        </div>
-
-        <div class="filter-bar">
-          <div class="search-box">
+      <div class="employee-panel">
+        <div class="panel-search-box">
+          <div class="side-search">
             <i class="fa-solid fa-search"></i>
-            <input type="text" placeholder="Search by name or employee ID...">
+            <input type="text" id="empSearch" placeholder="Search employee...">
           </div>
-          <select class="filter-select">
-            <option>All Departments</option>
-            <option>Engineering</option>
-            <option>Marketing</option>
-            <option>Sales</option>
-          </select>
-          <div class="date-picker-btn">
-            <i class="fa-regular fa-calendar"></i>
-            <span>20 May 2025</span>
+        </div>
+        <ul class="employee-list" id="employeeListContainer">
+          </ul>
+      </div>
+
+      <div class="calendar-panel">
+        <div class="calendar-header">
+          <div class="active-user-display">
+            <h3 id="targetEmployeeName">John Doe</h3>
+            <span id="targetEmployeeId">EMP001</span>
           </div>
-          <select class="filter-select">
-            <option>All Status</option>
-            <option>Present</option>
-            <option>Late</option>
-            <option>On Leave</option>
-            <option>Absent</option>
-          </select>
-          <button class="btn-action"><i class="fa-solid fa-filter"></i> Filter</button>
-          <button class="btn-action" style="background:#1b2e6e; margin-left:auto;"><i class="fa-solid fa-download"></i> Export</button>
+          <div class="calendar-controls">
+            <button class="month-nav-btn" onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+            <span class="current-month-label" id="monthYearLabel">May 2025</span>
+            <button class="month-nav-btn" onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
         </div>
 
-        <div class="table-wrap">
-          <table class="attendance-table">
-            <thead>
-              <tr>
-                <th>Employee ID</th>
-                <th>Employee Name</th>
-                <th>Department</th>
-                <th>Check In</th>
-                <th>Check Out</th>
-                <th>Status</th>
-                <th>Working Hours</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="selected">
-                <td>EMP001</td>
-                <td>
-                  <div class="user-cell">
-                    <div class="user-avatar-mini"><i class="fa-regular fa-user"></i></div>
-                    John Doe
-                  </div>
-                </td>
-                <td>Engineering</td>
-                <td>09:05 AM</td>
-                <td>06:10 PM</td>
-                <td><span class="status-badge present">Present</span></td>
-                <td>9h 5m</td>
-                <td><button class="btn-icon"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
-              </tr>
-              <tr>
-                <td>EMP002</td>
-                <td>
-                  <div class="user-cell">
-                    <div class="user-avatar-mini"><i class="fa-regular fa-user"></i></div>
-                    Jane Smith
-                  </div>
-                </td>
-                <td>Marketing</td>
-                <td>09:10 AM</td>
-                <td>06:00 PM</td>
-                <td><span class="status-badge present">Present</span></td>
-                <td>8h 50m</td>
-                <td><button class="btn-icon"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
-              </tr>
-              <tr>
-                <td>EMP003</td>
-                <td>
-                  <div class="user-cell">
-                    <div class="user-avatar-mini"><i class="fa-regular fa-user"></i></div>
-                    Michael Brown
-                  </div>
-                </td>
-                <td>Sales</td>
-                <td>09:20 AM</td>
-                <td>06:15 PM</td>
-                <td><span class="status-badge late">Late</span></td>
-                <td>8h 45m</td>
-                <td><button class="btn-icon"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
-              </tr>
-              <tr>
-                <td>EMP004</td>
-                <td>
-                  <div class="user-cell">
-                    <div class="user-avatar-mini"><i class="fa-regular fa-user"></i></div>
-                    Emily Davis
-                  </div>
-                </td>
-                <td>HR</td>
-                <td>-</td>
-                <td>-</td>
-                <td><span class="status-badge leave">On Leave</span></td>
-                <td>-</td>
-                <td><button class="btn-icon"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
-              </tr>
-              <tr>
-                <td>EMP005</td>
-                <td>
-                  <div class="user-cell">
-                    <div class="user-avatar-mini"><i class="fa-regular fa-user"></i></div>
-                    David Wilson
-                  </div>
-                </td>
-                <td>Finance</td>
-                <td>09:00 AM</td>
-                <td>06:05 PM</td>
-                <td><span class="status-badge present">Present</span></td>
-                <td>9h 5m</td>
-                <td><button class="btn-icon"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
-              </tr>
-              <tr>
-                <td>EMP006</td>
-                <td>
-                  <div class="user-cell">
-                    <div class="user-avatar-mini"><i class="fa-regular fa-user"></i></div>
-                    Sarah Johnson
-                  </div>
-                </td>
-                <td>Engineering</td>
-                <td>09:15 AM</td>
-                <td>06:00 PM</td>
-                <td><span class="status-badge late">Late</span></td>
-                <td>8h 45m</td>
-                <td><button class="btn-icon"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
-              </tr>
-              <tr>
-                <td>EMP007</td>
-                <td>
-                  <div class="user-cell">
-                    <div class="user-avatar-mini"><i class="fa-regular fa-user"></i></div>
-                    Daniel Lee
-                  </div>
-                </td>
-                <td>Marketing</td>
-                <td>09:07 AM</td>
-                <td>06:10 PM</td>
-                <td><span class="status-badge present">Present</span></td>
-                <td>9h 3m</td>
-                <td><button class="btn-icon"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
-              </tr>
-              <tr>
-                <td>EMP008</td>
-                <td>
-                  <div class="user-cell">
-                    <div class="user-avatar-mini"><i class="fa-regular fa-user"></i></div>
-                    Olivia Martinez
-                  </div>
-                </td>
-                <td>Sales</td>
-                <td>-</td>
-                <td>-</td>
-                <td><span class="status-badge absent">Absent</span></td>
-                <td>-</td>
-                <td><button class="btn-icon"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
-              </tr>
-            </tbody>
-          </table>
-          
-          <div class="table-footer">
-            <span>Showing 1 to 8 of 250 employees</span>
-            <div class="pagination">
-              <a href="#" class="page-link"><i class="fa-solid fa-chevron-left"></i></a>
-              <a href="#" class="page-link active">1</a>
-              <a href="#" class="page-link">2</a>
-              <a href="#" class="page-link">3</a>
-              <span style="padding: 4px 6px;">...</span>
-              <a href="#" class="page-link">32</a>
-              <a href="#" class="page-link"><i class="fa-solid fa-chevron-right"></i></a>
-            </div>
+        <div class="legend-bar">
+          <div class="legend-item"><div class="legend-dot dot-present"></div>Present</div>
+          <div class="legend-item"><div class="legend-dot dot-late"></div>Late Arrival</div>
+          <div class="legend-item"><div class="legend-dot dot-leave"></div>On Leave</div>
+          <div class="legend-item"><div class="legend-dot dot-absent"></div>Absent</div>
+        </div>
+
+        <div class="calendar-view">
+          <div class="weekday-header">
+            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
           </div>
+          <div class="days-grid" id="daysGridContainer">
+            </div>
         </div>
       </div>
+
     </div>
-
-    <div class="details-panel" id="detailsPanel">
-      <div class="details-header">
-        <h3>Employee Attendance Details</h3>
-        <button class="close-panel-btn" id="closePanelBtn"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      
-      <div class="details-content">
-        <div class="profile-hero">
-          <div class="hero-avatar"><i class="fa-regular fa-user"></i></div>
-          <div class="hero-meta">
-            <h2>John Doe <span class="status-badge present" style="font-size:10px; font-weight:normal; display:inline-block; margin-left:6px; min-width:auto; padding:2px 6px;">Present</span></h2>
-            <p>Software Engineer • Engineering</p>
-            <span>EMP001 • john.doe@example.com</span>
-          </div>
-        </div>
-
-        <div class="tab-nav">
-          <a href="#" class="tab-link active">Overview</a>
-          <a href="#" class="tab-link">Attendance History</a>
-          <a href="#" class="tab-link">Calendar View</a>
-        </div>
-
-        <div class="info-section">
-          <div class="section-title">Today's Details</div>
-          <div class="info-grid">
-            <span class="info-label">Date</span><span class="info-value">20 May 2025 (Tuesday)</span>
-            <span class="info-label">Check In</span><span class="info-value">09:05 AM</span>
-            <span class="info-label">Check Out</span><span class="info-value">06:10 PM</span>
-            <span class="info-label">Working Hours</span><span class="info-value">9h 5m</span>
-            <span class="info-label">Status</span><span class="info-value"><span class="status-badge present" style="min-width:auto; padding:2px 6px;">Present</span></span>
-            <span class="info-label">Location</span><span class="info-value">Bangalore Office</span>
-            <span class="info-label">IP Address</span><span class="info-value">192.168.1.101</span>
-          </div>
-        </div>
-
-        <div class="info-section">
-          <div class="section-title">This Month Summary (May 2025)</div>
-          <div class="metrics-list">
-            <div class="metric-row">
-              <span class="metric-label">Total Working Days</span><span class="metric-val">22</span>
-            </div>
-            <div class="metric-row">
-              <span class="metric-label">Days Present</span><span class="metric-val">20</span>
-            </div>
-            <div class="metric-row">
-              <span class="metric-label">Days Absent</span><span class="metric-val">1</span>
-            </div>
-            <div class="metric-row">
-              <span class="metric-label">Days On Leave</span><span class="metric-val">1</span>
-            </div>
-            <div class="metric-row">
-              <span class="metric-label">Late Arrivals</span><span class="metric-val">3</span>
-            </div>
-            <div class="metric-row">
-              <span class="metric-label">Avg. Working Hours</span><span class="metric-val">8h 52m</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="details-footer">
-        <button class="btn-full-width">View Full Attendance History</button>
-      </div>
-    </div>
-
   </div>
 </div>
 
 <script>
-  const closePanelBtn = document.getElementById('closePanelBtn');
-  const detailsPanel = document.getElementById('detailsPanel');
+// Mock data generation layer framework
+const employeesData = [
+  { id: "EMP001", name: "John Doe", title: "Engineering", presentDays: [1,2,5,6,7,8,9,12,13,14,15,16,19,20,22,23,26,27,28,29,30], lateDays: [10,21], leaveDays: [11], absentDays: [4] },
+  { id: "EMP002", name: "Jane Smith", title: "Marketing", presentDays: [1,2,5,6,7,8,12,13,14,15,19,20,21,22,23,26,27,28,29], lateDays: [9], leaveDays: [30], absentDays: [16] },
+  { id: "EMP003", name: "Michael Brown", title: "Sales", presentDays: [2,5,6,7,9,12,13,14,16,19,20,21,23,26,27,28,30], lateDays: [1,8,15,22,29], leaveDays: [], absentDays: [] },
+  { id: "EMP004", name: "Emily Davis", title: "HR", presentDays: [1,2,5,6,7,8,9,12,13,14,15,26,27,28,29,30], lateDays: [], leaveDays: [16,19,20,21,22,23], absentDays: [] },
+  { id: "EMP005", name: "David Wilson", title: "Finance", presentDays: [1,2,5,6,7,8,9,12,13,14,15,16,19,20,21,22,23,26,27,28,29,30], lateDays: [], leaveDays: [], absentDays: [] },
+  { id: "EMP006", name: "Sarah Johnson", title: "Engineering", presentDays: [1,2,5,6,8,9,12,13,15,16,19,20,22,23,26,27,29,30], lateDays: [7,14,21,28], leaveDays: [], absentDays: [] },
+  { id: "EMP007", name: "Daniel Lee", title: "Marketing", presentDays: [1,2,5,6,7,8,9,12,13,14,15,16,19,22,23,26,27,28,29,30], lateDays: [20], leaveDays: [21], absentDays: [] },
+  { id: "EMP008", name: "Olivia Martinez", title: "Sales", presentDays: [1,2,5,6,7,8,9,12,13,15,16,19,20,22,23,26,27,28,29,30], lateDays: [], leaveDays: [14], absentDays: [21] }
+];
 
-  // Toggle inspector view trigger layer handler
-  closePanelBtn.addEventListener('click', () => {
-    detailsPanel.classList.add('d-none');
+let activeEmployee = employeesData[0];
+let currentCalendarDate = new Date(2025, 4, 1); // May 2025 default point initial reference
+
+const empSearchInput = document.getElementById('empSearch');
+const employeeListContainer = document.getElementById('employeeListContainer');
+const daysGridContainer = document.getElementById('daysGridContainer');
+const monthYearLabel = document.getElementById('monthYearLabel');
+const targetEmployeeName = document.getElementById('targetEmployeeName');
+const targetEmployeeId = document.getElementById('targetEmployeeId');
+
+// Render Left Panel Items
+function renderEmployeeList(filterText = "") {
+  employeeListContainer.innerHTML = "";
+  const query = filterText.toLowerCase().trim();
+  
+  employeesData.forEach(emp => {
+    if (emp.name.toLowerCase().includes(query) || emp.id.toLowerCase().includes(query)) {
+      const li = document.createElement('li');
+      li.className = `employee-item ${activeEmployee.id === emp.id ? 'active' : ''}`;
+      li.innerHTML = `
+        <div class="emp-avatar"><i class="fa-regular fa-user"></i></div>
+        <div class="emp-info">
+          <h4>${emp.name}</h4>
+          <p>${emp.id} • ${emp.title}</p>
+        </div>
+      `;
+      li.addEventListener('click', () => {
+        activeEmployee = emp;
+        targetEmployeeName.textContent = emp.name;
+        targetEmployeeId.textContent = emp.id;
+        renderEmployeeList(filterText);
+        renderCalendarGrid();
+      });
+      employeeListContainer.appendChild(li);
+    }
   });
+}
+
+// Render Core Calendar Core Engine Layout Day Grid
+function renderCalendarGrid() {
+  daysGridContainer.innerHTML = "";
+  
+  const targetYear = currentCalendarDate.getFullYear();
+  const targetMonth = currentCalendarDate.getMonth();
+  
+  // Month string configuration formatter title update
+  const options = { month: 'long', year: 'numeric' };
+  monthYearLabel.textContent = currentCalendarDate.toLocaleDateString('en-US', options);
+  
+  // Target dimensions calculations pointers
+  const firstDayIndex = new Date(targetYear, targetMonth, 1).getDay();
+  const totalDaysInMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
+  
+  // Render empty leading cells padding placeholders if layout starts midway
+  for (let i = 0; i < firstDayIndex; i++) {
+    const emptyCell = document.createElement('div');
+    emptyCell.className = "calendar-day empty";
+    daysGridContainer.appendChild(emptyCell);
+  }
+  
+  // Build active date block matrix nodes cells loop architecture frame
+  for (let day = 1; day <= totalDaysInMonth; day++) {
+    const dayCell = document.createElement('div');
+    dayCell.className = "calendar-day";
+    
+    // Check if configuration date matches mock targets
+    const isToday = (day === 20 && targetMonth === 4 && targetYear === 2025);
+    if(isToday) dayCell.classList.add('today');
+    
+    // Append standard numeric digit base component anchor element
+    dayCell.innerHTML = `<span class="day-num">${day}</span>`;
+    
+    // Determine Weekend Status tracking flags structures configurations indicators
+    const currentWeekDay = new Date(targetYear, targetMonth, day).getDay();
+    const isWeekend = (currentWeekDay === 0 || currentWeekDay === 6);
+    
+    if (isWeekend) {
+      dayCell.style.background = "rgba(22, 34, 86, 0.25)";
+    } else {
+      // Evaluate Employee Profile Status Match Metrics criteria arrays bounds
+      if (activeEmployee.presentDays.includes(day)) {
+        dayCell.classList.add('status-present');
+        dayCell.innerHTML += `<div class="day-status">PRESENT</div><div class="day-time">09:05 AM</div>`;
+      } else if (activeEmployee.lateDays.includes(day)) {
+        dayCell.classList.add('status-late');
+        dayCell.innerHTML += `<div class="day-status">LATE ARRIVAL</div><div class="day-time">09:25 AM</div>`;
+      } else if (activeEmployee.leaveDays.includes(day)) {
+        dayCell.classList.add('status-leave');
+        dayCell.innerHTML += `<div class="day-status">ON LEAVE</div>`;
+      } else if (activeEmployee.absentDays.includes(day)) {
+        dayCell.classList.add('status-absent');
+        dayCell.innerHTML += `<div class="day-status">ABSENT</div>`;
+      }
+    }
+    
+    daysGridContainer.appendChild(dayCell);
+  }
+}
+
+// Controller logic layer functions navigation matrix arrays pointer indexes shifting
+function changeMonth(direction) {
+  currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
+  renderCalendarGrid();
+}
+
+// Direct action registration listening loops configurations definitions
+empSearchInput.addEventListener('input', (e) => {
+  renderEmployeeList(e.target.value);
+});
+
+// Setup Initialization triggers routines engines standard run call executions
+renderEmployeeList();
+renderCalendarGrid();
 </script>
 
 </body>
